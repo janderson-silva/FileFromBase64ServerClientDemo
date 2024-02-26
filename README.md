@@ -1,5 +1,5 @@
 Projeto utilizando na criação do serviço REST
-  * framework Horse ( https://github.com/HashLoad/horse );
+  * Framework Horse ( https://github.com/HashLoad/horse )
   * Middlewares Johnson ( https://github.com/HashLoad/jhonson )
 
 ![image](https://github.com/janderson-silva/ExemploUploadFoto/assets/32645110/d7b269c3-3ee9-492c-ac04-248a6521b75b)
