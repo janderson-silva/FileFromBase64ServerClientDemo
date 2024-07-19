@@ -40,6 +40,7 @@ type
     FDMemTable1arquivo: TBlobField;
     procedure pnlEnviarArquivoClick(Sender: TObject);
     procedure pnlListarArquivosClick(Sender: TObject);
+    procedure pnlExportarClick(Sender: TObject);
   private
     function ConvertFileToBase64(AInFileName: string): String;
     { Private declarations }
@@ -99,6 +100,27 @@ begin
 
       end;
     end;
+end;
+
+procedure TfrmPrincipal.pnlExportarClick(Sender: TObject);
+var
+  lPathApp,
+  lPathAppSub : string;
+  FileName: string;
+begin
+  // caminho das pastas gerais
+  lPathApp := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0)));
+
+  // caminho da pasta certificado
+  lPathAppSub := IncludeTrailingPathDelimiter(lPathApp + 'Arquivo');
+
+  ForceDirectories(lPathAppSub);
+
+  // Caminho e nome do arquivo onde será salvo o conteúdo decodificado
+  FileName := lPathAppSub + FDMemTable1.FieldByName('nome').AsString;
+
+  // salva no caminho especificado
+  TBlobField(FDMemTable1.FieldByName('arquivo')).SaveToFile(FileName);
 end;
 
 procedure TfrmPrincipal.pnlListarArquivosClick(Sender: TObject);

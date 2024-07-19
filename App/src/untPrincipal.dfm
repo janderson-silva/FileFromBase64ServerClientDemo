@@ -85,6 +85,7 @@ object frmPrincipal: TfrmPrincipal
       ParentFont = False
       TabOrder = 2
       StyleElements = []
+      OnClick = pnlExportarClick
     end
   end
   object DBGrid1: TDBGrid
