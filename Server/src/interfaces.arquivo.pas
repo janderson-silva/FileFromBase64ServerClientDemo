@@ -17,7 +17,8 @@ interface
 
 uses
   Horse,
-  VCL.Graphics;
+  Data.DB,
+  FireDAC.Comp.Client;
 
 type
   iArquivo = interface
@@ -31,6 +32,7 @@ type
     function arquivo : String   {oid}; overload;
 
     function Insert(out erro : String) : iArquivo; overload;
+    function Select(out erro : string) : TFDquery; overload;
 
     function &End : iArquivo;
 

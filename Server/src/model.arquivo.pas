@@ -20,7 +20,6 @@ uses
   Data.DB,
   FireDAC.Comp.Client,
   System.SysUtils,
-  VCL.Graphics,
   interfaces.arquivo,
   model.connection,
   System.Classes,
@@ -47,6 +46,7 @@ type
       function arquivo : String   {oid}; overload;
 
       function Insert(out erro : String) : iArquivo; overload;
+      function Select(out erro : string) : TFDquery; overload;
 
       function &End : iArquivo;
 
@@ -135,13 +135,34 @@ begin
     qry.SQL.Add('    :arquivo');
     qry.SQL.Add(')');
     qry.ParamByName('nome').Value := Fnome;
-    TBlobField(qry.ParamByName('arquivo')).LoadFromFile(ConvertBase64ToFile(Farquivo));
+    qry.ParamByName('arquivo').LoadFromFile(ConvertBase64ToFile(Farquivo), ftBlob);
     qry.ExecSQL;
     qry.Free;
     erro := '';
   except on ex:exception do
     begin
       erro := 'Erro ao inserir arquivo: ' + ex.Message;
+    end;
+  end;
+end;
+
+function TArquivo.Select(out erro : string) : TFDquery;
+var
+  qry : TFDQuery;
+begin
+  try
+    qry := TFDQuery.Create(nil);
+    qry.Connection := Model.Connection.FConnection;
+    qry.Active := False;
+    qry.sql.Clear;
+    qry.sql.Add('select * from arquivo');
+    qry.Active := True;
+    erro := '';
+    Result := qry;
+  except on ex:exception do
+    begin
+      erro := 'Erro ao consultar Arquivo: ' + ex.Message;
+      Result := nil;
     end;
   end;
 end;

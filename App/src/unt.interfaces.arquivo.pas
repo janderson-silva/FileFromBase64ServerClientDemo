@@ -27,6 +27,7 @@ type
     function arquivo : string; overload;
 
     function Insert : iArquivo; overload;
+    function Select : String; overload;
 
     function &End : iArquivo;
 

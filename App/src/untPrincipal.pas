@@ -22,22 +22,24 @@ uses
   unt.model.arquivo, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
   FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
   FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Comp.DataSet,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client,
+  DataSet.Serialize;
 
 type
   TfrmPrincipal = class(TForm)
     Panel3: TPanel;
     pnlListarArquivos: TPanel;
     pnlEnviarArquivo: TPanel;
-    pnlNFCe: TPanel;
+    pnlExportar: TPanel;
     DBGrid1: TDBGrid;
     DataSource1: TDataSource;
     FDMemTable1: TFDMemTable;
     FDMemTable1id: TIntegerField;
     FDMemTable1nome: TStringField;
-    FDMemTable1arquivo: TWideMemoField;
     OpenDialog1: TOpenDialog;
+    FDMemTable1arquivo: TBlobField;
     procedure pnlEnviarArquivoClick(Sender: TObject);
+    procedure pnlListarArquivosClick(Sender: TObject);
   private
     function ConvertFileToBase64(AInFileName: string): String;
     { Private declarations }
@@ -97,6 +99,26 @@ begin
 
       end;
     end;
+end;
+
+procedure TfrmPrincipal.pnlListarArquivosClick(Sender: TObject);
+var
+  FArquivo : iArquivo;
+begin
+  FArquivo := TArquivo.New;
+  try
+    //carrega o MemTable com os dados do JSON
+    FDMemTable1.Close;
+    FDMemTable1.LoadFromJSON(FArquivo
+                               .Select);
+    FDMemTable1.Open;
+    FDMemTable1.First;
+  except on E : Exception do
+    begin
+      raise Exception.Create(E.Message);
+      Exit;
+    end;
+  end;
 end;
 
 end.

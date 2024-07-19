@@ -43,6 +43,7 @@ type
       function arquivo : string; overload;
 
       function Insert : iArquivo; overload;
+      function Select : String; overload;
 
       function &End : iArquivo;
 
@@ -87,6 +88,21 @@ begin
     raise Exception.Create('Status Code: #' + Resp.StatusCode.ToString + #13+#13 + Resp.Content )
   else
     Application.MessageBox(PChar('Cadastrado com sucesso!'),'Atenção',MB_OK+MB_ICONINFORMATION);
+end;
+
+function TArquivo.Select: String;
+var
+  Resp : IResponse;
+begin
+  Resp := TRequest.New.BaseURL('http://localhost:9000/v1/')
+              .Resource('arquivo')
+              .Accept('application/json')
+            .Get;
+
+  if Resp.StatusCode <> 200 then
+    raise Exception.Create('Status Code: #' + Resp.StatusCode.ToString + #13+#13 + Resp.Content )
+  else
+    Result := Resp.Content;
 end;
 
 function TArquivo.id (Value : Integer) : iArquivo;

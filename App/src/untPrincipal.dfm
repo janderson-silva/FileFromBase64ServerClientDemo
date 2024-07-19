@@ -21,8 +21,6 @@ object frmPrincipal: TfrmPrincipal
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 0
-    ExplicitTop = 8
-    ExplicitWidth = 738
     object pnlListarArquivos: TPanel
       AlignWithMargins = True
       Left = 385
@@ -43,7 +41,7 @@ object frmPrincipal: TfrmPrincipal
       ParentFont = False
       TabOrder = 0
       StyleElements = []
-      ExplicitLeft = 339
+      OnClick = pnlListarArquivosClick
     end
     object pnlEnviarArquivo: TPanel
       AlignWithMargins = True
@@ -67,7 +65,7 @@ object frmPrincipal: TfrmPrincipal
       StyleElements = []
       OnClick = pnlEnviarArquivoClick
     end
-    object pnlNFCe: TPanel
+    object pnlExportar: TPanel
       AlignWithMargins = True
       Left = 511
       Top = 3
@@ -76,7 +74,7 @@ object frmPrincipal: TfrmPrincipal
       Cursor = crHandPoint
       Align = alRight
       BevelOuter = bvNone
-      Caption = 'Converter Base64 selecionado para File'
+      Caption = 'Exportar Blob selecionado para File'
       Color = 16744448
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -87,7 +85,6 @@ object frmPrincipal: TfrmPrincipal
       ParentFont = False
       TabOrder = 2
       StyleElements = []
-      ExplicitLeft = 465
     end
   end
   object DBGrid1: TDBGrid
@@ -97,6 +94,7 @@ object frmPrincipal: TfrmPrincipal
     Width = 778
     Height = 314
     Align = alClient
+    DataSource = DataSource1
     DrawingStyle = gdsClassic
     TabOrder = 1
     TitleFont.Charset = DEFAULT_CHARSET
@@ -134,10 +132,8 @@ object frmPrincipal: TfrmPrincipal
       FieldName = 'nome'
       Size = 250
     end
-    object FDMemTable1arquivo: TWideMemoField
-      DisplayLabel = 'Base64'
+    object FDMemTable1arquivo: TBlobField
       FieldName = 'arquivo'
-      BlobType = ftWideMemo
     end
   end
   object OpenDialog1: TOpenDialog

@@ -17,6 +17,9 @@ interface
 
 uses
   Horse,
+  Data.DB,
+  DataSet.Serialize,
+  FireDAC.Comp.Client,
   Soap.EncdDecd,
   System.Classes,
   System.JSON,
@@ -64,10 +67,56 @@ begin
   end;
 end;
 
+procedure SelectArquivo(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  Farquivo : iArquivo;
+  qry : TFDQuery;
+  erro : string;
+  ArrayArquivo : TJSONArray;
+begin
+  // Conexao com o banco...
+  try
+    Farquivo := TArquivo.New;
+  except
+    res.Send('{ "Erro": "Erro ao conectar com o banco" }').Status(500);
+    exit;
+  end;
+
+  try
+    try
+      qry := Farquivo
+                .Select(erro);
+
+      if erro <> '' then
+        raise Exception.Create(erro)
+      else
+      begin
+        if qry.RecordCount > 0 then
+        begin
+          ArrayArquivo := qry.ToJSONArray();
+          res.Send<TJSONArray>(ArrayArquivo).Status(200);
+        end
+        else
+        begin
+          res.Send('{ "Erro": "Nenhum cadastro de pessoa_anexo encontrado" }').Status(404);
+        end;
+      end;
+    except on E : Exception do
+      begin
+        res.Send('{ "erro": "'+E.Message+'" }').Status(400);
+        Exit;
+      end;
+    end;
+  finally
+    qry.Free;
+  end;
+end;
+
 procedure Registry;
 begin
     THorse.Group.Prefix('v1')
-      .Post('/arquivo', InsertArquivo);
+      .Post('/arquivo', InsertArquivo)
+      .Get('/arquivo', SelecTArquivo);
 end;
 
 end.
