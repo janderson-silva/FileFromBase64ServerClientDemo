@@ -11,7 +11,7 @@
 
 
 
-unit controller.foto;
+unit controller.arquivo;
 
 interface
 
@@ -22,48 +22,22 @@ uses
   System.JSON,
   System.SysUtils,
   VCL.Graphics,
-  interfaces.foto,
-  model.foto;
+  interfaces.arquivo,
+  model.arquivo;
 
 procedure Registry;
 
 implementation
 
-function BitmapFromBase64(const base64: string): TBitmap;
+procedure InsertArquivo(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 var
-  Input: TStringStream;
-  Output: TBytesStream;
-begin
-  Input := TStringStream.Create(base64, TEncoding.ASCII);
-  try
-    Output := TBytesStream.Create;
-    try
-      Soap.EncdDecd.DecodeStream(Input, Output);
-      Output.Position := 0;
-      Result := TBitmap.Create;
-      try
-        Result.LoadFromStream(Output);
-      except
-        Result.Free;
-        raise;
-      end;
-    finally
-      Output.Free;
-    end;
-  finally
-    Input.Free;
-  end;
-end;
-
-procedure InsertFoto(Req: THorseRequest; Res: THorseResponse; Next: TProc);
-var
-  Ffoto : ifoto;
-  erro, foto64 : string;
+  FArquivo : iArquivo;
+  erro : string;
   body  : TJsonValue;
 begin
   // Conexao com o banco...
   try
-    Ffoto := Tfoto.New;
+    FArquivo := TArquivo.New;
   except
     res.Send('{ "Erro": "Erro ao conectar com o banco" }').Status(500);
     exit;
@@ -72,11 +46,9 @@ begin
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJsonValue;
 
-    foto64 := body.GetValue<string>('foto','');
-
-    Ffoto
+    FArquivo
         .nome(body.GetValue<string>('nome',''))
-        .foto(BitmapFromBase64(foto64))
+        .arquivo(body.GetValue<string>('arquivo',''))
       .Insert(erro);
 
     body.Free;
@@ -95,7 +67,7 @@ end;
 procedure Registry;
 begin
     THorse.Group.Prefix('v1')
-      .Post('/foto', InsertFoto);
+      .Post('/arquivo', InsertArquivo);
 end;
 
 end.

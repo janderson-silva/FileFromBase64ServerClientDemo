@@ -18,18 +18,28 @@ interface
 uses
   Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, System.NetEncoding,
-  unt.interfaces.foto,
-  unt.model.foto;
+  unt.interfaces.arquivo,
+  unt.model.arquivo, Data.DB, Vcl.Grids, Vcl.DBGrids, FireDAC.Stan.Intf,
+  FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error, FireDAC.DatS,
+  FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client;
 
 type
   TfrmPrincipal = class(TForm)
-    Panel1: TPanel;
-    Panel2: TPanel;
-    btnEnviar: TButton;
-    Image1: TImage;
-    procedure btnEnviarClick(Sender: TObject);
+    Panel3: TPanel;
+    pnlListarArquivos: TPanel;
+    pnlEnviarArquivo: TPanel;
+    pnlNFCe: TPanel;
+    DBGrid1: TDBGrid;
+    DataSource1: TDataSource;
+    FDMemTable1: TFDMemTable;
+    FDMemTable1id: TIntegerField;
+    FDMemTable1nome: TStringField;
+    FDMemTable1arquivo: TWideMemoField;
+    OpenDialog1: TOpenDialog;
+    procedure pnlEnviarArquivoClick(Sender: TObject);
   private
-    function Base64FromBitmap(Bitmap: TBitmap): string;
+    function ConvertFileToBase64(AInFileName: string): String;
     { Private declarations }
   public
     { Public declarations }
@@ -42,48 +52,51 @@ implementation
 
 {$R *.dfm}
 
-function TfrmPrincipal.Base64FromBitmap(Bitmap: TBitmap): string;
+function TfrmPrincipal.ConvertFileToBase64(AInFileName: string): String;
 var
-  Input: TBytesStream;
-  Output: TStringStream;
-  Encoding: TBase64Encoding;
+  inStream    : TStream;
+  outStream   : TStream;
+  vFile       : String;
+  vStringList : TStringList;
 begin
-  Input := TBytesStream.Create;
+  inStream    := TFileStream.Create(AInFileName, fmOpenRead);
+  vStringList := TStringList.Create;
   try
-    Bitmap.SaveToStream(Input);
-    Input.Position := 0;
-    Output := TStringStream.Create('', TEncoding.ASCII);
-
+    vFile := FormatDateTime('hhmmss',Now);
+    outStream := TFileStream.Create(vFile, fmCreate);
     try
-      Encoding := TBase64Encoding.Create(0);
-      Encoding.Encode(Input, Output);
-      Result := Output.DataString;
+      TNetEncoding.Base64.Encode(inStream, outStream);
     finally
-      Encoding.Free;
-      Output.Free;
+      outStream.Free;
     end;
+
+    vStringList.LoadFromFile(vFile);
+
+    Result := vStringList.Text;
   finally
-    Input.Free;
+    DeleteFile(Pchar(vFile));
+    inStream.Free;
   end;
 end;
 
-procedure TfrmPrincipal.btnEnviarClick(Sender: TObject);
+procedure TfrmPrincipal.pnlEnviarArquivoClick(Sender: TObject);
 var
-  foto64 : string;
-  FFoto : iFoto;
+  FArquivo : iArquivo;
 begin
-  Image1.Picture.LoadFromFile(GetCurrentDir + '\teste.bmp');
-  Image1.Refresh;
+  OpenDialog1.FileName := '';
+  if OpenDialog1.Execute then
+    if OpenDialog1.FileName <> '' then
+    begin
+      FArquivo := TArquivo.New;
+      try
+        FArquivo
+            .nome(ExtractFileName(OpenDialog1.FileName))
+            .arquivo(ConvertFileToBase64(OpenDialog1.FileName))
+          .Insert;
+      finally
 
-  foto64 := Base64FromBitmap(Image1.Picture.Bitmap);
-  FFoto := TFoto.New;
-  try
-    FFoto
-        .foto(foto64)
-      .Insert;
-  finally
-
-  end;
+      end;
+    end;
 end;
 
 end.

@@ -11,23 +11,27 @@
 
 
 
-program ServerUploadFoto;
+unit unt.interfaces.arquivo;
 
-{$APPTYPE CONSOLE}
+interface
 
-{$R *.res}
+type
+  iArquivo = interface
+    function id (Value : Integer) : iArquivo; overload;
+    function id : Integer; overload;
 
-uses
-  System.SysUtils,
-  Horse,
-  Horse.Jhonson,
-  controller.foto in 'src\controller.foto.pas',
-  model.foto in 'src\model.foto.pas',
-  interfaces.foto in 'src\interfaces.foto.pas',
-  model.connection in 'src\model.connection.pas';
+    function nome (Value : String) : iArquivo; overload;
+    function nome : String; overload;
 
-begin
-  THorse.Use(Jhonson());
-  controller.foto.Registry;
-  THorse.Listen(9000);
+    function arquivo (Value : string) : iArquivo; overload;
+    function arquivo : string; overload;
+
+    function Insert : iArquivo; overload;
+
+    function &End : iArquivo;
+
+  end;
+
+implementation
+
 end.

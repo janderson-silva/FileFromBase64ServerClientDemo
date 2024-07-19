@@ -11,7 +11,7 @@
 
 
 
-unit interfaces.foto;
+unit interfaces.arquivo;
 
 interface
 
@@ -20,19 +20,19 @@ uses
   VCL.Graphics;
 
 type
-  iFoto = interface
-    function id (Value : Integer) : iFoto; overload;
+  iArquivo = interface
+    function id (Value : Integer) : iArquivo; overload;
     function id : Integer; overload;
 
-    function nome (Value : String) : iFoto; overload;
+    function nome (Value : String) : iArquivo; overload;
     function nome : String; overload;
 
-    function foto (Value : TBitmap   {oid}) : iFoto; overload;
-    function foto : TBitmap   {oid}; overload;
+    function arquivo (Value : String   {oid}) : iArquivo; overload;
+    function arquivo : String   {oid}; overload;
 
-    function Insert(out erro : String) : iFoto; overload;
+    function Insert(out erro : String) : iArquivo; overload;
 
-    function &End : iFoto;
+    function &End : iArquivo;
 
   end;
 

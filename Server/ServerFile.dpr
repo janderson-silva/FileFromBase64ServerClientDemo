@@ -11,27 +11,31 @@
 
 
 
-unit unt.interfaces.foto;
+program ServerFile;
 
-interface
+{$APPTYPE CONSOLE}
 
-type
-  iFoto = interface
-    function id (Value : Integer) : iFoto; overload;
-    function id : Integer; overload;
+{$R *.res}
 
-    function nome (Value : String) : iFoto; overload;
-    function nome : String; overload;
+uses
+  System.SysUtils,
+  Horse,
+  Horse.Jhonson,
+  controller.arquivo in 'src\controller.arquivo.pas',
+  model.arquivo in 'src\model.arquivo.pas',
+  interfaces.arquivo in 'src\interfaces.arquivo.pas',
+  model.connection in 'src\model.connection.pas';
 
-    function foto (Value : string) : iFoto; overload;
-    function foto : string; overload;
-
-    function Insert : iFoto; overload;
-
-    function &End : iFoto;
-
-  end;
-
-implementation
-
+begin
+  THorse.Use(Jhonson());
+  controller.arquivo.Registry;
+  THorse.Listen(9000,
+                procedure
+                begin
+                  Writeln('Serviço executando na porta ' + THorse.Port.ToString);
+                  Writeln('');
+                  Write('Pressione Enter para parar');
+                  Readln;
+                  THorse.StopListen;
+                end);
 end.
